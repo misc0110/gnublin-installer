@@ -3,14 +3,19 @@ VERSION = 1.2-beta
 CPP = g++
 CXXFLAGS = -Wall -g -I/usr/lib/wx/include/gtk2-unicode-release-2.8 -I/usr/include/wx-2.8 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__ -pthread -DVERSION='"$(VERSION)"'
 LDFLAGS = -lparted -lcurl -pthread -Wl,-Bsymbolic-functions  -L/usr/lib/i386-linux-gnu   -lwx_gtk2u_richtext-2.8 -lwx_gtk2u_aui-2.8 -lwx_gtk2u_xrc-2.8 -lwx_gtk2u_qa-2.8 -lwx_gtk2u_html-2.8 -lwx_gtk2u_adv-2.8 -lwx_gtk2u_core-2.8 -lwx_baseu_xml-2.8 -lwx_baseu_net-2.8 -lwx_baseu-2.8  -larchive
+LDFLAGS_CMD = -lparted -larchive
 
 OBJ = net.o disk.o installer.o archive.o settings.o progress.o backup.o
+OBJ_CMD = disk.o archive.o cmdparser.o cmdline.o 
 
 RELEASE_NAME = gnublin-installer-$(VERSION)
 RELEASE_FILES = gnublin-installer settings.xml
 
 gnublin-installer: $(OBJ)
 	$(CPP) $(CXXFLAGS) -o gnublin-installer $(OBJ) $(LDFLAGS)
+
+gnublin-cmdline: $(OBJ_CMD)
+	$(CPP) -Wall -o gnublin-cmdline $(LDFLAGS_CMD) $(OBJ_CMD)
 
 %.o: %.cpp
 	$(CPP) $(CXXFLAGS) -c $<
