@@ -1,9 +1,13 @@
-VERSION = 1.3-beta
+VERSION = 1.3.1-beta
 
 CPP = g++
-CXXFLAGS = -Wall -g -I/usr/lib/wx/include/gtk2-unicode-release-2.8 -I/usr/include/wx-2.8 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__ -pthread -DVERSION='"$(VERSION)"'
-LDFLAGS = -lparted -lcurl -pthread -Wl,-Bsymbolic-functions  -L/usr/lib/i386-linux-gnu   -lwx_gtk2u_richtext-2.8 -lwx_gtk2u_aui-2.8 -lwx_gtk2u_xrc-2.8 -lwx_gtk2u_qa-2.8 -lwx_gtk2u_html-2.8 -lwx_gtk2u_adv-2.8 -lwx_gtk2u_core-2.8 -lwx_baseu_xml-2.8 -lwx_baseu_net-2.8 -lwx_baseu-2.8  -larchive
-LDFLAGS_CMD = -lparted -larchive
+#-I/usr/lib/wx/include/gtk2-unicode-release-2.8 -I/usr/include/wx-2.8 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__
+CXXFLAGS = -Wall -g `wx-config --cxxflags` -pthread -DVERSION='"$(VERSION)"'
+CXXFLAGS_CMD = -Wall -g -DVERSION='"$(VERSION)"'s
+# -lwx_gtk2u_richtext-2.8 -lwx_gtk2u_aui-2.8 -lwx_gtk2u_xrc-2.8 -lwx_gtk2u_qa-2.8 -lwx_gtk2u_html-2.8 -lwx_gtk2u_adv-2.8 -lwx_gtk2u_core-2.8 -lwx_baseu_xml-2.8 -lwx_baseu_net-2.8 -lwx_baseu-2.8
+LDFLAGS = -lparted -lcurl -pthread -Wl,-Bsymbolic-functions  -L/usr/lib/i386-linux-gnu  `wx-config --libs`  -larchive
+LDFLAGS_CMD = -lparted -larchive -L/usr/lib/i386-linux-gnu -Wl,-Bsymbolic-functions
+
 
 OBJ = net.o disk.o installer.o archive.o settings.o progress.o backup.o
 OBJ_CMD = disk.o archive.o cmdparser.o cmdline.o 
@@ -13,7 +17,7 @@ RELEASE_FILES = gnublin-installer gnublin-cmdline settings.xml
 
 gnublin-installer: $(OBJ) $(OBJ_CMD)
 	$(CPP) $(CXXFLAGS) -o gnublin-installer $(OBJ) $(LDFLAGS)
-	$(CPP) -Wall -o gnublin-cmdline $(LDFLAGS_CMD) $(OBJ_CMD)
+	$(CPP) $(CXXFLAGS_CMD) -o gnublin-cmdline $(OBJ_CMD) $(LDFLAGS_CMD) 
 
 
 %.o: %.cpp
@@ -66,7 +70,7 @@ release: gnublin-installer
 	echo "Priority: optional" >> deb/DEBIAN/control
 	echo "Architecture: i386" >> deb/DEBIAN/control
 	echo "Essential: no" >> deb/DEBIAN/control
-	echo "Depends: libparted0debian1, libcurl3, libwxgtk2.8-0, libarchive1" >> deb/DEBIAN/control
+	echo "Depends: libparted0debian1, libcurl3, libwxgtk2.8-0, libarchive12" >> deb/DEBIAN/control
 	echo "Installed-Size: $(DEBSIZE)" >> deb/DEBIAN/control
 	echo "Maintainer: Michael Schwarz <michael.schwarz91@gmail.com>" >> deb/DEBIAN/control
 	echo "Description: Graphical installer for GNUBLIN embedded Linux board" >> deb/DEBIAN/control
